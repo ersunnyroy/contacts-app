@@ -1,21 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const {getContact, getContacts, } = require("../controllers/contactController");
 
 /**
  * Get all contacts api route
  * @access public
  */
-router.route("/").get((req, res) => {
-   res.status(200).send({message : "Get contacts api route"});
-});
+router.route("/").get(getContacts);
 
 /**
  * Get sepecific contacts api route
  * @access public
  */
-router.route("/:id").get((req, res) => {
-    res.status(200).send({message : "Get single contacts api route"});
- });
+router.route("/:id").get(getContact);
 
 /**
  * Create contact api route
