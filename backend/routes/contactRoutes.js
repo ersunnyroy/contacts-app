@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {getContact, getContacts, } = require("../controllers/contactController");
+const {getContact, getContacts, createContact, updateContact, deleteContact } = require("../controllers/contactController");
 
 /**
  * Get all contacts api route
@@ -18,24 +18,18 @@ router.route("/:id").get(getContact);
  * Create contact api route
  * @access public
  */
-router.route("/").post((req, res) => {
-    res.status(200).send({message : "Create contact post api route"});
-});
+router.route("/").post(createContact);
 
 /**
  * Update contact api route
  * @access public
  */
-router.route("/:id").put((req, res) => {
-    res.status(200).send({message : "Update contact put api route"});
-});
+router.route("/:id").put(updateContact);
 
 /**
  * Delete contact api route
  * @access public
  */
-router.route("/:id").delete((req, res) => {
-    res.status(200).send({message : "Delete contact api route"});
-});
+router.route("/:id").delete(deleteContact);
 
 module.exports = router;

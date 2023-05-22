@@ -12,8 +12,23 @@ const getContact = (req, res) => {
 };
 
 
+const createContact = (req, res) => {
+    res.status(200).send({message : "Create contact post api route"});
+};
+
+
+const updateContact = (req, res) => {
+    res.status(200).send({message : "Update contact put api route"});
+}
+
+const deleteContact = (req, res) => {
+    res.status(200).send({message : "Delete contact api route"});
+}
+
 module.exports = {
     getContacts,
     getContact,
-    
+    createContact,
+    updateContact,
+    deleteContact
 }
