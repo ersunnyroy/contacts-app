@@ -1,12 +1,43 @@
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const User = require('../models/usersModel');
+const jwt  = require('jsonwebtoken');
+const { constants } = require('../../constants');
 /**
  * @description Controller of Users 
  * @author  Sunny Roy
  */
 
 const loginUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    if(!email || !password)
+    {
+        res.status(constants.VALIDATION_ERROR);
+        throw new Error("All fields are mandatory!");
+    }
+
+    const user = User.findOne({email});
+
+    if(user && (await bcrypt.compare(password, user.password)))
+    {
+        const accessToken = jwt.sign({
+            user:{
+                firstname: user.firstname,
+                lastname: user.lastname,
+                email: user.email,
+                id: user.id
+            },
+        }, );
+
+        res.status(constants.OKAY).json({ accessToken });
+    }
+    else
+    {
+        res.status(constants.NOT_FOUND);
+        throw new Erro
+    }
+
     res.status(200).send({message : "user login route"});
  });
 
