@@ -6,6 +6,11 @@ const asyncHandler = require('express-async-handler');
 
 const loginUser = asyncHandler(async (req, res) => {
 
+    res.status(200).send({message : "user login route"});
+ });
+
+const registerUser = asyncHandler(async(req, res) => {
+
     const {firstname, lastname, email, password} = req.body;
 
     if(!firstname || !lastname || !email || !password)
@@ -14,11 +19,7 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new Error("All fields are mandatory!");
     }
 
-    res.status(200).send({message : "user login route"});
- });
-
-const registerUser = (req, res) => {
     res.status(200).send({message : "User registeration route"});
- }
+ });
 
  module.exports = { loginUser, registerUser};
