@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const User = require('../models/usersModel');
 const jwt  = require('jsonwebtoken');
+const dotenv = require('dotenv').config();
 const { constants } = require('../../constants');
 /**
  * @description Controller of Users 
@@ -17,28 +18,35 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new Error("All fields are mandatory!");
     }
 
-    const user = User.findOne({email});
+    const user = await User.findOne( { email } );
 
-    if(user && (await bcrypt.compare(password, user.password)))
+    if(user)
     {
-        const accessToken = jwt.sign({
-            user:{
-                firstname: user.firstname,
-                lastname: user.lastname,
-                email: user.email,
-                id: user.id
-            },
-        }, );
+        const verifyPassword = await bcrypt.compare(password, user.password);
+        if(verifyPassword)
+        {
+            const accessToken = jwt.sign({
+                user:{
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    email: user.email,
+                    id: user.id
+                },
+            }, process.env.JWT_SECRET, { expiresIn : "1m" });
 
-        res.status(constants.OKAY).json({ accessToken });
+            res.status(constants.OKAY).json({ accessToken });
+        }
+        else
+        {
+            res.status(constants.UNAUTHORIZED);
+            throw new Error("Invalid credentials");
+        }
     }
     else
     {
         res.status(constants.NOT_FOUND);
-        throw new Erro
+        throw new Error("User not found");
     }
-
-    res.status(200).send({message : "user login route"});
  });
 
 const registerUser = asyncHandler(async(req, res) => {
@@ -47,7 +55,7 @@ const registerUser = asyncHandler(async(req, res) => {
 
     if(!firstname || !lastname || !email || !password)
     {
-        res.status(400);
+        res.status(constants.VALIDATION_ERROR);
         throw new Error("All fields are mandatory!");
     }
 
@@ -55,7 +63,7 @@ const registerUser = asyncHandler(async(req, res) => {
     const userAvailable = await User.findOne({email});
     if(userAvailable)
     {
-        res.status(400);
+        res.status(constants.VALIDATION_ERROR);
         throw new Error("User already exists with this email address");
     }
     
@@ -70,7 +78,7 @@ const registerUser = asyncHandler(async(req, res) => {
                                 password: hashedPassword
                             });
 
-    res.status(200).send({message : "Registered Successfully!", user});
+    res.status(constants.OKAY).send({message : "Registered Successfully!", user});
  });
 
  module.exports = { loginUser, registerUser};
