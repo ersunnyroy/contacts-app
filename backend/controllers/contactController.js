@@ -58,9 +58,16 @@ const updateContact = asyncHandler(async (req, res) => {
     }
 })
 
-const deleteContact = (req, res) => {
-    res.status(200).send({message : "Delete contact api route"});
-}
+const deleteContact = asyncHandler(async(req, res) => {
+    try{
+        const filter = {_id: req.params.id};
+        const deleteContact = await Contact.deleteOne(filter);
+        res.status(200).send({message : "Contact deleted!"});
+    }catch(err){
+        res.status(constants.SERVER_ERROR);
+        throw new Error(err.message); 
+    }
+})
 
 module.exports = {
     getContacts,
