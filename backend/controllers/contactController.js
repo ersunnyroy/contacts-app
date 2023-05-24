@@ -24,7 +24,7 @@ const getContacts = async(req, res) => {
 
 const getContact = async(req, res) => {
     try{
-        const filter = {_id: req.params.id};
+        const filter = {_id: req.params.id, user_id: req.user.id};
         const contact = await Contact.findOne(filter);
         res.status(constants.OKAY).send(contact);
     }
