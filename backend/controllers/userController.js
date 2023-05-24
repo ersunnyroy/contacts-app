@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/usersModel');
 const jwt  = require('jsonwebtoken');
 const dotenv = require('dotenv').config();
-const { constants } = require('../../constants');
+const { constants } = require('../constants');
 /**
  * @description Controller of Users 
  * @author  Sunny Roy
@@ -32,7 +32,7 @@ const loginUser = asyncHandler(async (req, res) => {
                     email: user.email,
                     id: user.id
                 },
-            }, process.env.JWT_SECRET, { expiresIn : "1m" });
+            }, process.env.JWT_SECRET, { expiresIn : "15m" });
 
             res.status(constants.OKAY).json({ accessToken });
         }
@@ -81,4 +81,28 @@ const registerUser = asyncHandler(async(req, res) => {
     res.status(constants.OKAY).send({message : "Registered Successfully!", user});
  });
 
- module.exports = { loginUser, registerUser};
+ const currentUser = asyncHandler(async(req, res) => {
+        const user = req.user;
+        res.status(constants.OKAY).json(user)
+ })
+
+ /* commented as logout functionality need to check
+ const logoutUser = asyncHandler(async(req, res) => {
+    const authToken = req.headers.Authrozation || req.headers.authorization;
+
+    if(authToken && authToken.startsWith("Bearer"))
+    {
+        token = authToken.split(" ")[1];
+        console.log(token);
+        const destroy = await jwt.destroy(token, process.env.JWT_SECRET);
+        res.status(constants.OKAY).json({message : "Logged out successfully"});
+    }
+    else
+    {
+        res.status(constants.UNAUTHORIZED);
+        throw new Error("User not authrozied or token is missing");
+    }
+    res.status(constants.OKAY).json(user)
+}) */
+
+ module.exports = { loginUser, registerUser, currentUser};

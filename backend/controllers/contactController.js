@@ -3,6 +3,11 @@
  * @author  Sunny Roy
  */
 
+const Contact = require('../models/contactModel');
+
+const asyncHandler = require('express-async-handler');
+const { constants } = require('../constants');
+
 const getContacts = (req, res) => {
     res.status(200).send({message : "Get contacts api route"});
 };
@@ -12,9 +17,24 @@ const getContact = (req, res) => {
 };
 
 
-const createContact = (req, res) => {
-    res.status(200).send({message : "Create contact post api route"});
-};
+const createContact = asyncHandler(async(req, res) => {
+    const { name, email, address, phone_number } = req.body;
+    if(!name || !email || !address || !phone_number)
+    {
+        res.status(constants.VALIDATION_ERROR);
+        throw new Error("All fields are mandatory!");    
+    }
+
+    try{
+
+        const newContact = await Contact.create({ name, address, email, phone_number, user_id : req.user.id});
+        res.status(200).send({message : "New Contact Created", contact : newContact});
+    }
+    catch(err){
+        res.status(constants.SERVER_ERROR);
+        throw new Error(err.message);
+    }
+});
 
 
 const updateContact = (req, res) => {
