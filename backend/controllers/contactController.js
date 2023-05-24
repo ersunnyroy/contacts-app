@@ -9,11 +9,11 @@ const asyncHandler = require('express-async-handler');
 const { constants } = require('../constants');
 
 const getContacts = (req, res) => {
-    res.status(200).send({message : "Get contacts api route"});
+    res.status(constants.OKAY).send({message : "Get contacts api route"});
 };
 
 const getContact = (req, res) => {
-    res.status(200).send({message : "Get single contact api route"});
+    res.status(constants.OKAY).send({message : "Get single contact api route"});
 };
 
 
@@ -28,7 +28,7 @@ const createContact = asyncHandler(async(req, res) => {
     try{
 
         const newContact = await Contact.create({ name, address, email, phone_number, user_id : req.user.id});
-        res.status(200).send({message : "New Contact Created", contact : newContact});
+        res.status(constants.OKAY).send({message : "New Contact Created", contact : newContact});
     }
     catch(err){
         res.status(constants.SERVER_ERROR);
@@ -37,9 +37,26 @@ const createContact = asyncHandler(async(req, res) => {
 });
 
 
-const updateContact = (req, res) => {
-    res.status(200).send({message : "Update contact put api route"});
-}
+const updateContact = asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const { name, address, email, phone_number } = req.body;
+
+    const updateData = {
+        name, address, email, phone_number
+    };
+
+    const filter = {_id : id};
+    try{
+        const UpdatedContact = await Contact.findOneAndUpdate(filter, updateData, {
+            new: true
+        });
+
+        res.status(constants.OKAY).send({message : "Contact Updated!", contact : UpdatedContact});
+    } catch(err){
+        res.status(constants.SERVER_ERROR);
+        throw new Error(err.message);     
+    }
+})
 
 const deleteContact = (req, res) => {
     res.status(200).send({message : "Delete contact api route"});
