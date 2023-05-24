@@ -8,12 +8,30 @@ const Contact = require('../models/contactModel');
 const asyncHandler = require('express-async-handler');
 const { constants } = require('../constants');
 
-const getContacts = (req, res) => {
+const getContacts = async(req, res) => {
+
+    try{
+        
+        const contacts = await Contact.find({});
+        res.status(constants.OKAY).send(contacts);
+    }
+    catch(err){
+        res.status(constants.SERVER_ERROR);
+        throw new Error(err.message);     
+    }
     res.status(constants.OKAY).send({message : "Get contacts api route"});
 };
 
-const getContact = (req, res) => {
-    res.status(constants.OKAY).send({message : "Get single contact api route"});
+const getContact = async(req, res) => {
+    try{
+        const filter = {_id: req.params.id};
+        const contact = await Contact.findOne(filter);
+        res.status(constants.OKAY).send(contact);
+    }
+    catch(err){
+        res.status(constants.SERVER_ERROR);
+        throw new Error(err.message);     
+    }
 };
 
 
