@@ -11,8 +11,8 @@ const { constants } = require('../constants');
 const getContacts = async(req, res) => {
 
     try{
-        
-        const contacts = await Contact.find({});
+        const filter = {user_id: req.user.id}
+        const contacts = await Contact.find(filter);
         res.status(constants.OKAY).send(contacts);
     }
     catch(err){
